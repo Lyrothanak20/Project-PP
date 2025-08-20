@@ -11,7 +11,7 @@ const Banner = () => {
       <div className="container mx-auto px-4 h-screen flex items-center">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
           {/* Text Content */}
-          <div className="lg:col-span-1 flex flex-col justify-center space-y-6 px-10">
+          <div className="lg:col-span-1 flex flex-col justify-center space-y-6 px-20">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -50,7 +50,7 @@ const Banner = () => {
               ease: "easeInOut"
             }}>
                 <div className="absolute inset-0 rounded-3xl backdrop-blur-xl overflow-hidden px-15">
-                  <img src={Image} alt="" className="w-100 h-full object-contain bg-contain "/>
+                  <img src={Image} alt="" className="w-150 h-full object-contain bg-contain "/>
                 </div>
             </motion.div>
           </div>
