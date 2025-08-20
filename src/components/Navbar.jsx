@@ -3,19 +3,12 @@ import { BookOpenIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import FloatingParticle from "./FloatingParticle";
 import Avatar from "../assets/boy.png";  
 
-const Navbar = () => {
+const Navbar = ({ handleSearch = (term) => console.log('Search:', term) }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Define handleSearch or pass as prop later
-  const handleSearch = (term) => {
-    console.log("Searching for:", term);
-    // Add your search logic here
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleSearch(searchTerm);
+  handleSearch(searchTerm);
   };
 
   useEffect(() => {
@@ -84,6 +77,13 @@ const Navbar = () => {
                     placeholder="Discover your next read..."
                     className="w-full rounded-2xl border border-gray-700/50 bg-gray-900/60 py-2 md:py-3 pl-10 md:pl-12 pr-4 md:pr-6 text-sm md:text-base text-gray-100 placeholder-gray-400 focus:outline-none focus:border-cyan-300/50 focus:ring-2 focus:ring-cyan-300/30 backdrop-blur-xl shadow-xl transition-all duration-300 hover:bg-gray-900/80"
                   />
+                  <button
+                    type="submit"
+                    aria-label="Search"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center h-8 md:h-9 px-3 md:px-4 rounded-full bg-cyan-400/10 text-cyan-300 border border-cyan-300/20 hover:bg-cyan-400/20 transition-colors"
+                  >
+                    <MagnifyingGlassIcon className="w-4 h-4 md:w-5 md:h-5" />
+                  </button>
                 </div>
               </div>
             </form>

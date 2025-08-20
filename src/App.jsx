@@ -7,7 +7,7 @@ import Banner from './components/Banner';
 import Card from './components/Card';
 import { Footer } from './components/Footer';
 function App() {
-  const [searchQuery, setSearchQuery] = useState('best sellers');
+  const [searchQuery, setSearchQuery] = useState('Books');
   return (
     <>
      <div className='min-h-screen bg-gray-900'>

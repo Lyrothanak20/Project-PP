@@ -49,8 +49,8 @@ const generatePageNumber = () => {
           })) || [];
 
         let limitedBooks = mappedBooks.slice(0, 35);
-        if (limitedBooks.length < 35) {
-          const missingCount = 35 - limitedBooks.length;
+        if (limitedBooks.length < 100) {
+          const missingCount = 10 - limitedBooks.length;
           const dummyBooks = Array.from({ length: missingCount }, (_, i) => ({
             id: `dummy-${i}`,
             dummy: true,
