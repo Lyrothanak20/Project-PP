@@ -1,4 +1,5 @@
-import { StarIcon } from "@heroicons/react/24/outline";
+import { StarIcon as StarOutline } from "@heroicons/react/24/outline";
+import { StarIcon as StarSolid } from "@heroicons/react/24/solid";
 import React, { useEffect, useState } from "react";
 
 const Card = ({ searchQuery }) => {
@@ -7,25 +8,24 @@ const Card = ({ searchQuery }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
-const generatePageNumber = () => {
-  const totalPages = Math.ceil(books.length / itemsPerPage);
-  const pages = [];
-
-  for (let i = 1; i <= totalPages; i++) {
-    pages.push(i);
-  }
-
-  return pages;
-};
+  const generatePageNumber = (totalPages) => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+    return pages;
+  };
 
 
   useEffect(() => {
     const fetchBooks = async () => {
+      // Use a sensible default when no searchQuery is provided so initial load shows books
+      const query = (searchQuery || "").toString().trim() || "bestsellers";
       try {
+        // Reset to first page on a new search
+        setCurrentPage(1);
         setLoading(true);
         const response = await fetch(
           `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
-            searchQuery
+            query
           )}&maxResults=35&key=AIzaSyAtZxon2bKZvQUnvW-n1KSxScTAa9cLO3I`
         );
 
@@ -49,10 +49,12 @@ const generatePageNumber = () => {
           })) || [];
 
         let limitedBooks = mappedBooks.slice(0, 35);
-        if (limitedBooks.length < 100) {
-          const missingCount = 10 - limitedBooks.length;
+        // Ensure there's at least 10 items shown so the UI grid isn't empty
+        const missingCount = Math.max(0, 10 - limitedBooks.length);
+        if (missingCount > 0) {
+          const start = limitedBooks.length;
           const dummyBooks = Array.from({ length: missingCount }, (_, i) => ({
-            id: `dummy-${i}`,
+            id: `dummy-${start + i}`,
             dummy: true,
           }));
           limitedBooks = [...limitedBooks, ...dummyBooks];
@@ -75,6 +77,12 @@ const generatePageNumber = () => {
   }, [searchQuery]);
 
 
+  const totalPages = Math.max(1, Math.ceil(books.length / itemsPerPage));
+  useEffect(() => {
+    // Clamp current page when books change
+    setCurrentPage((p) => Math.min(Math.max(1, p), totalPages));
+  }, [books.length, totalPages]);
+
   const paginatedBooks = books.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -82,7 +90,8 @@ const generatePageNumber = () => {
 
 
   const getPlaceholder = (title) => {
-    const initials = title
+  const safeTitle = (title || "").trim() || "?";
+  const initials = safeTitle
       .split(" ")
       .slice(0, 3)
       .map((word) => word[0]?.toUpperCase() || "")
@@ -173,17 +182,17 @@ const generatePageNumber = () => {
                       {book.authors}
                     </p>
                     <div className="flex items-center mt-2 md:mt-3">
-                      <div className="flex text-amber-400">
-                        {[...Array(5)].map((_, i) => (
-                          <StarIcon
-                            key={i}
-                            className={`h-4 w-4 md:h-5 md:w-5 ${
-                              i < Math.floor(book.rating)
-                                ? "fill-current"
-                                : "fill-gray-600"
-                            }`}
-                          />
-                        ))}
+                      <div className="flex text-amber-400" aria-hidden>
+                        {[...Array(5)].map((_, i) => {
+                          const Filled = i < Math.floor(book.rating) ? StarSolid : StarOutline;
+                          return (
+                            <Filled
+                              key={i}
+                              className="h-4 w-4 md:h-5 md:w-5"
+                              aria-hidden
+                            />
+                          );
+                        })}
                       </div>
                       <span className="ml-2 text-cyan-300 text-sm md:text-base">
                         {book.rating}
@@ -241,9 +250,9 @@ const generatePageNumber = () => {
           >
             Previous
           </button>
-          {generatePageNumber().map((page, index) => (
+          {generatePageNumber(totalPages).map((page) => (
             <button
-              key={index}
+              key={page}
               onClick={() => setCurrentPage(page)}
               className={`px-3 py-1 md:px-4 md:py-2 rounded-md md:rounded-lg text-xs md:text-sm ${
                 page === currentPage
@@ -256,11 +265,9 @@ const generatePageNumber = () => {
           ))}
           <button
             onClick={() =>
-              setCurrentPage((p) =>
-                Math.min(generatePageNumber().length, p + 1)
-              )
+              setCurrentPage((p) => Math.min(totalPages, p + 1))
             }
-            disabled={currentPage === generatePageNumber().length}
+            disabled={currentPage === totalPages}
             className="px-3 py-1 md:px-4 md:py-2 rounded-md md:rounded-lg bg-gray-900/80 border border-gray-700/50 text-cyan-300 text-xs md:text-sm hover:bg-gray-900/60 transition-colors disabled:opacity-50"
           >
             Next

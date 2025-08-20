@@ -64,7 +64,7 @@ export const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="#"
+                  href="https://github.com/Lyrothanak20/Project-PP.git"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-400 hover:text-cyan-300 text-sm transition-colors flex items-center justify-center sm:justify-start group"
